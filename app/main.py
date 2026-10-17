@@ -7,27 +7,25 @@ def calculate_profit(file_name: str) -> None:
         trades = json.load(file)
 
     profit = {
-        "earned_money": 0,
-        "matecoin_account": 0
+        "earned_money": Decimal(0),
+        "matecoin_account": Decimal(0)
     }
 
     for trade in trades:
-        for key in trade:
-            if trade[key] is not None:
-                if key == "bought":
-                    profit["earned_money"] -= (
-                        Decimal(trade[key]) * Decimal(trade["matecoin_price"])
-                    )
-                    profit["matecoin_account"] += Decimal(trade[key])
-                elif key == "sold":
-                    profit["earned_money"] += (
-                        Decimal(trade[key]) * Decimal(trade["matecoin_price"])
-                    )
-                    profit["matecoin_account"] -= Decimal(trade[key])
+        if trade["bought"] is not None:
+            profit["earned_money"] -= (
+                Decimal(trade["bought"]) * Decimal(trade["matecoin_price"])
+            )
+            profit["matecoin_account"] += Decimal(trade["bought"])
+        if trade["sold"] is not None:
+            profit["earned_money"] += (
+                Decimal(trade["sold"]) * Decimal(trade["matecoin_price"])
+            )
+            profit["matecoin_account"] -= Decimal(trade["sold"])
 
-    profit_str = {}
-    for key in profit:
-        profit_str[key] = str(profit[key])
+    profit_str = {
+        key: str(value) for key, value in profit.items()
+    }
 
     with open("profit.json", "w") as file:
         json.dump(profit_str, file, indent=2)
